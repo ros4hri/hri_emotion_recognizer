@@ -1,0 +1,4 @@
+/hri_emotion_recognizer:
+  ros__parameters:
+    # Model family name
+    emotion_model: emotion-ferplus-8.onnx
