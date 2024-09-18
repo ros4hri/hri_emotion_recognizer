@@ -144,7 +144,7 @@ class TestHRIEmotionRecognizer(unittest.TestCase):
 
             # Start publishing the image
             self.image_timer = self.tester_node.create_timer(
-                1, self.publish_image_callback)
+                0.1, self.publish_image_callback)
 
             # Allow some time for the emotion recognizer to process
             timeout = 10  # seconds
@@ -173,7 +173,6 @@ class TestHRIEmotionRecognizer(unittest.TestCase):
                         break
                 if found:
                     break
-                time.sleep(1)  # Sleep to reduce CPU usage
 
             self.assertTrue(
                 found, f"Expected emotion '{expected_emotion}' not found for image '{img_path}'")
