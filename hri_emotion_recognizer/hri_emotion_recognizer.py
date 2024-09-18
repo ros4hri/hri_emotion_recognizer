@@ -185,6 +185,9 @@ class NodeEmotionRecognizer(Node):
         return EMOTION_DICT[classes[0]], prob[classes[0]]
 
     def timer_callback(self):
+
+        self.last_recognised_emotions = {}
+
         for face_id, face in self.hri_listener.faces.items():
             if face.cropped is not None:
                 try:
@@ -204,6 +207,8 @@ class NodeEmotionRecognizer(Node):
                     }
                     # Only publish the emotion if the face_id is tracked
                     if face_id in self.hri_listener.faces:
+                        self.last_recognised_emotions[face_id] = emotion_result.get(
+                            "dominant_emotion")
                         self.publish_emotion(face_id, emotion_result)
 
                 except Exception as e:
@@ -240,6 +245,11 @@ class NodeEmotionRecognizer(Node):
                 KeyValue(key="Module name", value="hri_emotion_recognizer"),
                 KeyValue(key="Current lifecycle state",
                          value=self._state_machine.current_state[1]),
+                KeyValue(key="Last recognised emotions",
+                         value="; ".join(
+                             f"face <{face_id}>: {emotion}"
+                             for face_id, emotion
+                             in self.last_recognised_emotions.items())),
             ],
         )
 
