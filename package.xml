@@ -19,7 +19,7 @@
   <test_depend>std_msgs</test_depend>
   <test_depend>rosgraph_msgs</test_depend>
   <test_depend>hri_face_detect</test_depend>
-  <depend>hri_emotion_models</depend>
+  <test_depend>hri_emotion_models</test_depend>
   <test_depend>tf2_geometry_msgs</test_depend>
   <export>
     <build_type>ament_python</build_type>
