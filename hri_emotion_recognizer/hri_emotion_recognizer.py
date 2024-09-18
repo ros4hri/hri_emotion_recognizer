@@ -16,7 +16,6 @@
 # limitations under the License.
 
 import rclpy
-# from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor, ExternalShutdownException
 from hri_msgs.msg import Expression
 from hri import HRIListener
@@ -28,17 +27,20 @@ from rclpy.lifecycle import Node, LifecycleState, TransitionCallbackReturn
 from lifecycle_msgs.msg import State
 import ament_index_python as aip
 from pathlib import Path
+
 # with opencv 4.5.4, what tiago uses, we need to use emotion-ferplus-8 model!
-# Process output
+
 EMOTION_DICT = {
-    0: Expression.NEUTRAL,      # 'neutral'
-    1: Expression.HAPPY,        # 'happiness'
-    2: Expression.SURPRISED,    # 'surprise'
-    3: Expression.SAD,          # 'sadness'
-    4: Expression.ANGRY,        # 'anger'
-    5: Expression.DISGUSTED,    # 'disgust'
-    6: Expression.SCARED        # 'fear'
+    0: Expression.NEUTRAL,
+    1: Expression.HAPPY,
+    2: Expression.SURPRISED,
+    3: Expression.SAD,
+    4: Expression.ANGRY,
+    5: Expression.DISGUSTED,
+    6: Expression.SCARED
 }
+
+AMENT_RESOURCE_TYPE = 'dnn_models.emotion_recognition'
 
 
 class NodeEmotionRecognizer(Node):
@@ -49,6 +51,9 @@ class NodeEmotionRecognizer(Node):
             'emotion-ferplus-8.onnx',
             ParameterDescriptor(description='ONNX model type')
         )
+
+        self.last_recognised_emotions = {}
+
         # Start publishing diagnostics
         self.diag_pub = self.create_publisher(
             DiagnosticArray, '/diagnostics', 1)
@@ -69,35 +74,34 @@ class NodeEmotionRecognizer(Node):
         return super().on_cleanup(state)
 
     def on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self.model = "models/"+self.get_parameter('emotion_model').value
+        self.model = "models/" + self.get_parameter('emotion_model').value
 
         self.current_diagnostics_status = DiagnosticStatus.WARN
         self.current_diagnostics_message = 'Emotion recognizer is configuring...'
 
-        resource_type = 'dnn_models.emotion_recognition'
         try:
             # Get all packages that provide the emotion recognition models
-            available_resources = aip.get_resources(resource_type)
+            available_resources = aip.get_resources(AMENT_RESOURCE_TYPE)
             if not available_resources:
                 self.get_logger().error(
-                    f"No resources found for type {resource_type}")
+                    f"No resources found for ament_index type {AMENT_RESOURCE_TYPE}."
+                    " Have you installed the emotion recognition models?")
                 return TransitionCallbackReturn.FAILURE
 
             # Check each package for available models
-            for package_name, package_path in available_resources.items():
+            for package_name in available_resources.keys():
                 resource_name, model_path = aip.get_resource(
-                    resource_type, package_name)
+                    AMENT_RESOURCE_TYPE, package_name)
                 if not model_path:
                     self.get_logger().error(
                         f"No resource found in {package_name}")
                     continue  # Move to the next package
 
-                if resource_name == self.model:
-                    pkg_share_path = aip.get_package_share_path(package_name)
+                if resource_name.endswith(self.model):
+                    pkg_share_path = aip.get_package_share_directory(
+                        package_name)
                     self.onnx_model_path = Path(pkg_share_path) / resource_name
-                    self.get_logger().info(
-                        f"Loaded emotion model: {self.onnx_model_path}")
-                    break  # Stop the loop after finding the model
+                    break
 
             else:
                 # If no matching model is found after the loop
@@ -108,6 +112,8 @@ class NodeEmotionRecognizer(Node):
             # Load the ONNX emotion model
             self.emotion_model = cv2.dnn.readNetFromONNX(
                 str(self.onnx_model_path))
+            self.get_logger().info(
+                f"Loaded emotion model: {self.onnx_model_path}")
 
         except Exception as e:
             error_msg = f'Failed to load {self.onnx_model_path} model: {str(e)}'
@@ -116,7 +122,7 @@ class NodeEmotionRecognizer(Node):
             self.current_diagnostics_message = error_msg
 
             self.get_logger().error(error_msg)
-            return False, error_msg
+            return TransitionCallbackReturn.FAILURE
 
         self.current_diagnostics_status = DiagnosticStatus.WARN
         self.current_diagnostics_message = (
@@ -127,11 +133,16 @@ class NodeEmotionRecognizer(Node):
 
         return super().on_configure(state)
 
-    def internal_cleanup(self):  # not sure what to put
-        return
+    def internal_cleanup(self):
 
-    def internal_deactivate(self):  # not sure what to put
-        return
+        self.destroy_timer(self.diag_timer)
+        self.destroy_publisher(self.diag_pub)
+
+    def internal_deactivate(self):
+
+        self.destroy_timer(self.timer)
+        for face_id in self.face_publishers:
+            self.destroy_publisher(self.face_publishers[face_id])
 
     def on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
         self.internal_deactivate()
@@ -200,6 +211,7 @@ class NodeEmotionRecognizer(Node):
                         f"Failed to analyze emotion for face_id {face_id}: {e}")
 
     def publish_emotion(self, face_id, emotion_result):
+
         try:
             if face_id not in self.face_publishers:
                 self.face_publishers[face_id] = self.create_publisher(
@@ -222,7 +234,7 @@ class NodeEmotionRecognizer(Node):
         arr = DiagnosticArray()
         msg = DiagnosticStatus(
             level=self.current_diagnostics_status,
-            name='/social_perception/faces/hri_emotion_recognizer',  # to fix to the right name
+            name='/social_perception/faces/hri_emotion_recognizer',
             message=self.current_diagnostics_message,
             values=[
                 KeyValue(key="Module name", value="hri_emotion_recognizer"),

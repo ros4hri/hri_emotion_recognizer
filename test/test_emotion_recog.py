@@ -30,6 +30,14 @@ from hri_face_detect.node_face_detect import NodeFaceDetect
 from pathlib import Path
 
 
+import numpy as np
+import random
+
+# Set seeds for reproducibility
+np.random.seed(42)
+random.seed(42)
+
+
 def spin_some(executor, timeout=timedelta(seconds=10.)):
     start = datetime.now()
     cb_iter = executor._wait_for_ready_callbacks(timeout_sec=0.)
