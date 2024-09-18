@@ -36,7 +36,9 @@ def generate_launch_description():
         parameters=config["parameters"],
         remappings=config["remappings"],
         arguments=config["arguments"],
-        output='both', emulate_tty=True)
+        output='both', emulate_tty=True,
+        # prefix="xterm -e ",
+    )
 
     configure_event = EmitEvent(event=ChangeState(
         lifecycle_node_matcher=matches_action(emotion_recognizer_node),

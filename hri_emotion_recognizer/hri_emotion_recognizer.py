@@ -92,15 +92,22 @@ class NodeEmotionRecognizer(Node):
             for package_name in available_resources.keys():
                 resource_name, model_path = aip.get_resource(
                     AMENT_RESOURCE_TYPE, package_name)
+                resource_name = resource_name.strip()
                 if not model_path:
                     self.get_logger().error(
                         f"No resource found in {package_name}")
                     continue  # Move to the next package
 
                 if resource_name.endswith(self.model):
-                    pkg_share_path = aip.get_package_share_directory(
-                        package_name)
-                    self.onnx_model_path = Path(pkg_share_path) / resource_name
+                    # we can not use aip.get_package_share_directory as the
+                    # models might be installed by non-ROS packages.
+                    # instead, assume the model is in the share/<package_name>/ directory
+                    pkg_share_path = Path(model_path) / 'share' / package_name
+                    if not pkg_share_path.exists():
+                        self.get_logger().error(
+                            f"Resource path {pkg_share_path} does not exist.")
+                        return TransitionCallbackReturn.FAILURE
+                    self.onnx_model_path = pkg_share_path / resource_name
                     break
 
             else:
