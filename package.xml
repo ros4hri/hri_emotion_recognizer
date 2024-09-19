@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>hri_emotion_recognizer</name>
+  <version>0.0.0</version>
+  <description>HRI Emotion recognizer node</description>
+  <maintainer email="sara.cooper@pal-robotics.com">Sara Cooper</maintainer>
+  <license>Apache License 2.0</license>
+
+  <depend>hri_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>cv_bridge</depend>
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+  <test_depend>cv_bridge</test_depend>
+  <test_depend>pyhri</test_depend>
+  <test_depend>std_msgs</test_depend>
+  <test_depend>rosgraph_msgs</test_depend>
+  <test_depend>hri_face_detect</test_depend>
+  <test_depend>hri_emotion_models</test_depend>
+  <test_depend>tf2_geometry_msgs</test_depend>
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

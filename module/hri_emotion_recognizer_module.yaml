@@ -1,0 +1,2 @@
+hri_emotion_recognizer:
+  launch: "hri_emotion_recognizer emotion_recognizer.launch.py"
