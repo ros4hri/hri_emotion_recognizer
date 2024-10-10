@@ -2,6 +2,11 @@
 Changelog for package hri_emotion_recognizer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* remove publisher when id lost
+* Contributors: Sara Cooper
+
 1.0.0 (2024-09-19)
 ------------------
 * rewrote the unit-test to use simpler logic and faster sim time
