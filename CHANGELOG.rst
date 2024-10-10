@@ -2,8 +2,8 @@
 Changelog for package hri_emotion_recognizer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.1 (2024-10-10)
+------------------
 * remove publisher when id lost
 * Contributors: Sara Cooper
 
