@@ -222,6 +222,12 @@ class NodeEmotionRecognizer(Node):
                     self.get_logger().error(
                         f"Failed to analyze emotion for face_id {face_id}: {e}")
 
+        for face_id in list(self.face_publishers):
+            if face_id not in self.hri_listener.faces.items():
+                # Unregister the subscription in ROS2
+                self.destroy_publisher(self.face_publishers[face_id])
+                del self.face_publishers[face_id]
+
     def publish_emotion(self, face_id, emotion_result):
 
         try:
