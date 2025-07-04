@@ -13,6 +13,7 @@ setup(
         ('share/ament_index/resource_index/pal_configuration.' + package_name,
             ['config/' + package_name]),
         ('share/' + package_name + '/config', ['config/00-defaults.yml']),
+        ('share/' + package_name + '/config', ['config/hri_emotion_recognizer_analyzers.yaml']),
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/module',
          ['module/hri_emotion_recognizer_module.yaml']),

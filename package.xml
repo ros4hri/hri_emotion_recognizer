@@ -7,9 +7,14 @@
   <maintainer email="sara.cooper@pal-robotics.com">Sara Cooper</maintainer>
   <license>Apache License 2.0</license>
 
+  <exec_depend>ament_index_python</exec_depend>
+  <exec_depend>diagnostic_aggregator</exec_depend>
+  <exec_depend>diagnostic_msgs</exec_depend>
+
   <depend>hri_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>cv_bridge</depend>
+
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>
