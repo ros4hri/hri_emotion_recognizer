@@ -2,6 +2,12 @@
 Changelog for package hri_emotion_recognizer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add diagnostic analyzers
+* add LICENSE and CONTRIBUTING.md
+* Contributors: Noel Jimenez, Séverin Lemaignan
+
 1.0.1 (2024-10-10)
 ------------------
 * remove publisher when id lost
