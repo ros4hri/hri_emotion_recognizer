@@ -2,8 +2,8 @@
 Changelog for package hri_emotion_recognizer
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.2 (2025-07-09)
+------------------
 * Add diagnostic analyzers
 * add LICENSE and CONTRIBUTING.md
 * Contributors: Noel Jimenez, Séverin Lemaignan
